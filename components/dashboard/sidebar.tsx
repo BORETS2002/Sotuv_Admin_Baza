@@ -65,8 +65,8 @@ export function Sidebar({ user, pathname, isSidebarOpen, setIsSidebarOpen }: Sid
       localStorage.removeItem("userLoginTime")
       localStorage.removeItem("warehouse_management_session")
 
-      // Sign out from both Supabase clients to ensure complete logout
-      await Promise.all([supabase.auth.signOut(), supabaseClient.auth.signOut()])
+      // Sign out from Supabase
+      await supabase.auth.signOut()
 
       // Use router for navigation
       router.push("/")
@@ -74,7 +74,7 @@ export function Sidebar({ user, pathname, isSidebarOpen, setIsSidebarOpen }: Sid
       console.error("Error signing out:", error)
       window.location.href = "/"
     }
-  }, [router, supabase.auth, supabaseClient.auth, user?.id, user?.email])
+  }, [router, supabase.auth, user?.id, user?.email])
 
   // Optimize active path checking
   const isActive = useCallback((path: string) => pathname === path, [pathname])
