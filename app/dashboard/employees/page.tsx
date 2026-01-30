@@ -66,15 +66,17 @@ export default function EmployeesPage() {
   const fetchData = async () => {
     try {
       setLoading(true)
+      setError(null)
 
-      // Xodimlarni olish
+      // Xodimlarni alohida so'rov bilan olish (bog'lanishsiz)
       const { data: employeesData, error: employeesError } = await supabase
         .from("employees")
-        .select("*, department:department_id(name)")
+        .select("*")
         .order("last_name")
 
       if (employeesError) {
-        throw employeesError
+        console.error("[v0] Employees fetch error:", employeesError)
+        throw new Error(`Xodimlarni olishda xatolik: ${employeesError.message}`)
       }
 
       // Bo'limlarni olish
@@ -84,8 +86,22 @@ export default function EmployeesPage() {
         .order("name")
 
       if (departmentsError) {
-        throw departmentsError
+        console.error("[v0] Departments fetch error:", departmentsError)
+        throw new Error(`Bo'limlarni olishda xatolik: ${departmentsError.message}`)
       }
+
+      // Bo'limlar mapini yaratish
+      const departmentsMap = new Map(
+        departmentsData?.map((d: any) => [d.id, d.name]) || []
+      )
+
+      // Xodimlar ma'lumotlarini bo'lim nomlari bilan enrichment qilish
+      const enrichedEmployees = employeesData?.map((emp: any) => ({
+        ...emp,
+        department: { name: departmentsMap.get(emp.department_id) || "Noma'lum" }
+      })) || []
+
+      setEmployees(enrichedEmployees)
 
       // Users jadvalini tekshirish
       try {
@@ -105,21 +121,26 @@ export default function EmployeesPage() {
               .filter((user) => user.role === "admin" || user.role === "superadmin") // Faqat admin va superadmin rollariga ega foydalanuvchilarni olish
               .map(async (user) => {
                 if (user.employee_id) {
-                  // Employee ma'lumotlarini olish
+                  // Employee ma'lumotlarini alohida so'rov bilan olish (bog'lanishsiz)
                   const { data: employeeData, error: employeeError } = await supabase
                     .from("employees")
-                    .select("*, department:department_id(name)")
+                    .select("*")
                     .eq("id", user.employee_id)
                     .single()
 
                   if (employeeError) {
-                    console.error("Employee ma'lumotlarini olishda xatolik:", employeeError.message)
+                    console.error("[v0] Employee fetch error:", employeeError.message)
                     return user
                   }
 
+                  // Department ma'lumotini enrichment qilish
+                  const deptName = departmentsMap.get(employeeData?.department_id) || "Noma'lum"
                   return {
                     ...user,
-                    employee: employeeData,
+                    employee: {
+                      ...employeeData,
+                      department: { name: deptName }
+                    },
                   }
                 }
                 return user
@@ -129,10 +150,9 @@ export default function EmployeesPage() {
           setAdmins(adminsWithEmployeeData)
         }
       } catch (e: any) {
-        console.error("Users jadvalini tekshirishda xatolik:", e.message)
+        console.error("[v0] Admin fetch error:", e.message)
       }
 
-      setEmployees(employeesData || [])
       setDepartments(departmentsData || [])
     } catch (error: any) {
       console.error("Ma'lumotlarni olishda xatolik:", error.message)
