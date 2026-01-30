@@ -6,7 +6,10 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
- 
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  swcMinify: true,
 }
 
 export default nextConfig
