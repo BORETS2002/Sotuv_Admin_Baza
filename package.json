@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "@radix-ui/react-checkbox": "latest",
+    "@radix-ui/react-popover": "latest",
+    "@radix-ui/react-radio-group": "latest",
+    "@supabase/auth-helpers-nextjs": "latest",
+    "@supabase/supabase-js": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^2.30.0",
+    "lucide-react": "^0.454.0",
+    "react-day-picker": "latest",
+    "recharts": "^2.10.3",
+    "tailwind-merge": "^2.5.5",
+    "tailwindcss-animate": "^1.0.7"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "postcss": "^8.5",
+    "typescript": "^5"
+  }
+}
