@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
-// Middleware funksiyasi
+// Proxy funksiyasi (middleware o'rniga)
 export function middleware(req: NextRequest) {
-  // API yo'llarini middleware tekshiruvidan chiqarib tashlash
+  // API yo'llarini proxy tekshiruvidan chiqarib tashlash
   if (req.nextUrl.pathname.startsWith("/api/")) {
     return NextResponse.next()
   }
