@@ -67,19 +67,44 @@ export default function IssueOrderPage() {
   const fetchEmployees = async () => {
     try {
       setIsDataLoading(true)
-      const { data, error } = await supabase.from("employees").select("*, departments(*)").order("last_name")
+      // Bog'lanishsiz employees so'rovi
+      const { data: employeesData, error: employeesError } = await supabase
+        .from("employees")
+        .select("*")
+        .order("last_name")
 
-      if (error) {
-        console.error("Employees fetch error:", error)
-        throw error
+      if (employeesError) {
+        console.error("[v0] Employees fetch error:", employeesError)
+        throw new Error(`Xodimlarni olishda xatolik: ${employeesError.message}`)
       }
 
-      setEmployees(data || [])
+      // Departments so'rovini alohida qil
+      const { data: departmentsData, error: departmentsError } = await supabase
+        .from("departments")
+        .select("*")
+
+      if (departmentsError) {
+        console.error("[v0] Departments fetch error:", departmentsError)
+        // Departments olmasa, employees ni yoki'rincha ko'rsatamiz
+      }
+
+      // Departments mapini yaratish
+      const departmentsMap = new Map(
+        departmentsData?.map((d: any) => [d.id, d]) || []
+      )
+
+      // Employees ma'lumotlarini enrichment qilish
+      const enrichedEmployees = employeesData?.map((emp: any) => ({
+        ...emp,
+        departments: departmentsMap.get(emp.department_id) || null
+      })) || []
+
+      setEmployees(enrichedEmployees)
     } catch (error: any) {
-      console.error("Employees fetch error:", error)
+      console.error("[v0] Employees fetch error:", error.message)
       toast({
         title: "Xatolik yuz berdi",
-        description: error.message,
+        description: error.message || "Xodimlarni olishda xatolik",
         variant: "destructive",
       })
     } finally {
@@ -90,11 +115,12 @@ export default function IssueOrderPage() {
   const fetchEmployeeDepartment = async () => {
     try {
       setIsDataLoading(true)
-      console.log("Fetching department for employee ID:", selectedEmployee)
+      console.log("[v0] Fetching department for employee ID:", selectedEmployee)
 
+      // Bog'lanishsiz employees so'rovi
       const { data, error } = await supabase
         .from("employees")
-        .select("*, departments(*)")
+        .select("*")
         .eq("id", selectedEmployee)
         .single()
 
