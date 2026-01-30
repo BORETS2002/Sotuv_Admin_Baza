@@ -3,31 +3,13 @@
 import { useState, useCallback, useMemo } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import {
-  Warehouse,
-  Home,
-  Users,
-  Package,
-  FileText,
-  LogOut,
-  ChevronDown,
-  Layers,
-  ShoppingCart,
-  Send,
-  ReceiptIcon as ReceiptCheck,
-  Activity,
-  Shield,
-  FileBarChart2,
-  Lock,
-  FileCheck2,
-} from "lucide-react"
+import { getSupabaseClient } from "@/lib/supabase-client"
+import { Warehouse, Home, Users, Package, FileText, LogOut, ChevronDown, Layers, ShoppingCart, Send, ReceiptCent as ReceiptCheck, Activity, Shield, FileBarChart2, Lock, FileCheck2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { logAdminLogout } from "@/lib/admin-logger"
-import { getSupabaseClient } from "@/lib/supabase-client"
 
 interface SidebarProps {
   user: any
@@ -38,8 +20,7 @@ interface SidebarProps {
 
 export function Sidebar({ user, pathname, isSidebarOpen, setIsSidebarOpen }: SidebarProps) {
   const router = useRouter()
-  const supabase = createClientComponentClient()
-  const supabaseClient = getSupabaseClient()
+  const supabase = getSupabaseClient()
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({
     inventory: true,
     management: true,

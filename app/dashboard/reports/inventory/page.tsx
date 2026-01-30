@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { getSupabaseClient } from "@/lib/supabase-client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
@@ -17,7 +17,7 @@ const ChartLoading = () => (
 )
 
 export default function InventoryReportPage() {
-  const supabase = createClientComponentClient()
+  const supabase = getSupabaseClient()
   const [loading, setLoading] = useState(true)
   const [reportData, setReportData] = useState<any>(null)
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(new Date().setMonth(new Date().getMonth() - 1)))
